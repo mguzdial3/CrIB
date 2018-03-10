@@ -7,7 +7,7 @@ from desserts import problem_interface as dessert_interface
 
 class Problem:
 	def __init__(self, _problemType, _questionData, _initialKnowledgeBase, _function, _numArguments, _keyArgument, _scoreFunction, _target, _clearFunction):
-		self.problemtype =_problemType
+		self.problemType =_problemType
 		self.questionData = _questionData
 		self.knowledgeBase = _initialKnowledgeBase
 		self.function = _function
@@ -54,6 +54,3 @@ class TestInterface:
 				return self.GetNextProblem()
 			else:
 				return None
-
-
-
