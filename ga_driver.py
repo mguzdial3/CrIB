@@ -59,8 +59,9 @@ while not currentProblem is None:
             currentProblem.ActivateFunction(candidate[i])
         pass
     elif currentProblem.problemType is "story":
-        qd = currentProblem.function([evolve(currentProblem, initializers[3])], [None, currentProblem.target])
-        currentProblem.questionData = qd
+        #Currently stuck on problem 45, infinite recursion error
+        # qd = currentProblem.function([evolve(currentProblem, initializers[3])], [None, currentProblem.target])
+        # currentProblem.questionData = qd
         pass
     elif currentProblem.problemType is "dessert":
         #267.75
