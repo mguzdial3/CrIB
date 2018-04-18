@@ -25,6 +25,9 @@ class Problem:
 	def Score(self):
 		return self.scoreFunction(self.questionData, self.target)
 
+	def ScoreQ(self,q):
+		return self.scoreFunction(self.questionData, self.target)
+
 	#Clears current questionData
 	def Clear(self):
 		self.questionData = self.clearFunction(self.questionData)
