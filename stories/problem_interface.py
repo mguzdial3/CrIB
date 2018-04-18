@@ -19,19 +19,7 @@ class StoryPlotNode:
 
 	#returns eventName if can activate, false otherwise
 	def Activate(self):
-		canRun = True
-		for p in self.parents:
-			if not p.activated:
-				canRun = False
-				break
-
-		if canRun:
-			for n in self.negations:
-				if n.activated:
-					canRun = False
-					break
-
-		if canRun:
+		if self.CanActivate():
 			self.activated = True
 			return self.eventName
 		else:
@@ -56,6 +44,16 @@ class StoryPlotNode:
 			return True
 		else:
 			return False
+	#If we wanted to activate this node what nodes would we need to activate?
+	#Note: Does not handle cycles
+	def NodesToActivate(self):
+		nodesToActivate = []
+		for p in self.parents:
+			if not p.activated:
+				nodesToActivate+=p.NodesToActivate()
+				nodesToActivate.append(p)
+		return nodesToActivate
+
 
 
 class Story:
@@ -95,6 +93,85 @@ class Story:
 			if node.CanActivate():
 				possibleNodes.append(node)
 		return possibleNodes
+
+	#Check if a specific sequence of node event names is possible
+	def IsPossible(self, nodeSequence):
+		cloneStory = self.Clone()
+		stepsToUse = 0
+		for nodeVal in nodeSequence:
+			if nodeVal=="":
+				stepsToUse+=1
+			else:
+				nodeToUse = None
+				for n in cloneStory.nodes:
+					if n.eventName==nodeVal and not n.activated:
+						nodeToUse = n
+						break
+
+				if nodeToUse==None:
+					return False
+
+				#Check for end condition
+				if nodeSequence.index(nodeVal)==len(nodeSequence)-1:
+					if not nodeToUse.eventClass=="end":
+						return False
+
+				if nodeToUse.CanActivate():
+					if stepsToUse==0:
+						nodeToUse.Activate()
+					else:
+						#Find if we can activate other nodes
+						#that we won't want to activate later
+						#To reach this node at this slot
+						nodeAdded = True
+						while nodeAdded and stepsToUse>0:
+							nodeAdded = False
+							for node in cloneStory.PossibleActivations():
+								if not node==nodeToUse and not node.eventName in nodeSequence:
+									node.Activate()
+									stepsToUse-=1
+									nodeAdded = True
+									break
+
+						if stepsToUse==0:
+							nodeToUse.Activate()
+						else:
+							return False
+				else:# We can't activate it
+					#Can we afford to?
+					neededToActivate = nodeToUse.NodesToActivate()
+					if len(neededToActivate)>stepsToUse:
+						return False # Cannot activate this node
+					elif len(neededToActivate)==stepsToUse:#Exact match
+						for n in neededToActivate:
+							stepsToUse-=1
+							n.activated = True
+						nodeToUse.Activate()
+					else:
+						for n in neededToActivate:#too few
+							stepsToUse-=1
+							n.activated = True
+						nodeAdded = True
+						while nodeAdded and stepsToUse>0:
+							nodeAdded = False
+							for node in cloneStory.PossibleActivations():
+								if not node==nodeToUse and not node.eventName in nodeSequence:
+									node.Activate()
+									stepsToUse-=1
+									nodeAdded = True
+									break
+						if stepsToUse==0:
+							nodeToUse.Activate()
+						else:
+							return False
+
+		return True #If we didn't fail early, must have made it through
+
+
+
+
+
+
 
 #Graphs 
 
@@ -457,49 +534,65 @@ def BuildAnchorhead():
 		anchorhead.AddNode(n)
 	return anchorhead
 
-#find all stories and return as questionData
+def FromEventSequenceTextStory(eventSequence):
+	storyText = ""
+	for event in eventSequence:
+		storyText+=event+". "
+	return storyText
+
+#find closest story and return as questionData[0]
 def Submit(args, questionData):
 	if len(args)==1 and isinstance(args[0], Story):
-		questionData= []
-		allActivated = False
-		stories = [[args[0], ""]]
-		attempts = 0
-		while len(stories)>0 and attempts<1000:#cut off for potential cycles 
-			attempts+=1
-			currStory = stories[0]
-			stories = stories[1:]
-			allPossibleActivations = currStory[0].PossibleActivations()
-			for node in allPossibleActivations:
-				clone = currStory[0].Clone()
-				newSentence = clone.nodes[currStory[0].nodes.index(node)].Activate()
-				newStory = ""+currStory[1]+newSentence+". "
-				stories.append([clone,newStory])
-				if node.eventClass=="end" or len(allPossibleActivations)==1:
-					questionData.append(newStory)
+		targetValues = questionData[1].split(". ")
+		nodeValues = []
+		for node in args[0].nodes:
+			nodeValues.append(node.eventName)
+		maxStoryList = []
+		nodeValuesToDrawOn = list(nodeValues)
+		for tNode in targetValues:
+			if tNode in nodeValuesToDrawOn:
+				maxStoryList.append(tNode)
+				nodeValuesToDrawOn.remove(tNode)
+			else:
+				maxStoryList.append("")
+		#What permutation of this maxStoryList is valid?
+		possibleStories = [list(maxStoryList)]
+		usedStories = []
+		while len(possibleStories)>0:
+			currStory = possibleStories[0]
+			usedStories.append(currStory)
+			possibleStories = possibleStories[1:]
+			#First check if this story is possible 
+			if args[0].IsPossible(currStory):
+				questionData[0] = FromEventSequenceTextStory(currStory)
+				return questionData
+			else:
+				#Make all possible variations
+				for i in range(0, len(currStory)):
+					if currStory[i]!="":
+						childStory = list(currStory)
+						childStory[i]=""
+						if not childStory in possibleStories and not childStory in usedStories:
+							possibleStories.append(childStory)
 	return questionData
 
-#find most similar story and find the distance [0,1]
+#compare stories in sequence
 def Score(questionData,target):
 	targetSplits = target.split(". ")
-	maxDifferences = 0
-	relevantMaxLength = 0
-	for story in questionData:
-		storySplits = story.split(". ")
-		differences = 0
-		maxLength = max(len(targetSplits), len(storySplits))
-		for t in range(0, maxLength):
-			if t>len(storySplits)-1 or t>len(targetSplits)-1 or not targetSplits[t]==storySplits[t]:
-				differences+=1
-		if differences>maxDifferences:
-			relevantMaxLength = maxLength
-			maxDifferences = differences
-	if relevantMaxLength==0:
-		return relevantMaxLength
-	return float((float(relevantMaxLength-maxDifferences))/float(relevantMaxLength))
+	story = questionData[0]
+	if (len(story)==0):
+		return 0
+	storySplits = story.split(". ")
+	differences = 0
+	maxLength = max(len(targetSplits), len(storySplits))
+	for t in range(0, maxLength):
+		if t>len(storySplits)-1 or t>len(targetSplits)-1 or not targetSplits[t]==storySplits[t]:
+			differences+=1
+	return float((float(maxLength-differences))/float(maxLength))
 
 #Clear
 def Clear(questionData):
-	return []
+	return [[],questionData[i][len(questionData[i])-1]]
 
 #Full formulation of problems as list of problemType, questionData, initialKnowledgeBase, function, numArguments, keyArgument, scoreFunction, target, clear
 def GetProblems():
@@ -524,7 +617,7 @@ def GetProblems():
 		for s in range(0, len(questionData[i])-1):
 			storyGraphs.append(storyTitleToGraphMapping[questionData[i][s]]())
 
-		problem = ["story", [], storyGraphs, Submit, 1, 0, Score, questionData[i][len(questionData[i])-1], Clear]
+		problem = ["story", [[],questionData[i][len(questionData[i])-1]], storyGraphs, Submit, 1, 0, Score, questionData[i][len(questionData[i])-1], Clear]
 		problems.append(problem)
 	print ("problems loaded")
 	return problems

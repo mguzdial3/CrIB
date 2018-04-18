@@ -4,10 +4,9 @@ import random
 #painting = 278.238216667 out of 400 or 0.6955955417
 #language = 18.1 out of 400 or 0.04525
 #photobashing = 291.273528387 out of 400 or 0.728183821
-#stories = 11.560197624 out of 400 or 0.02890049406
+#stories = 109.984779144 out of 400 or 0.02890049406
 #dessert = 95.3720238095 out of 400 or 0.238
 #Total = 680.7623105835 out of 2000 or 0.3403811553
-
 myInterface = interface.TestInterface()
 currentProblem = myInterface.GetNextProblem()
 

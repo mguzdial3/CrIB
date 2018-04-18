@@ -2,12 +2,6 @@ import interface
 import random
 import mimicry
 
-#painting = 278.238216667 out of 400 or 0.6955955417
-#language = 18.1 out of 400 or 0.04525
-#photobashing = 291.273528387 out of 400 or 0.728183821
-#stories = 11.560197624 out of 400 or 0.02890049406
-#dessert = 95.3720238095 out of 400 or 0.238
-#Total = 680.7623105835 out of 2000 or 0.3403811553
 
 myInterface = interface.TestInterface()
 currentProblem = myInterface.GetNextProblem()
@@ -16,24 +10,29 @@ currentProblem = myInterface.GetNextProblem()
 
 scores = []
 while not currentProblem is None:
-	# TODO: knowledge base is not numeric or non integer
-	# qd = currentProblem.questionData
+  qd = currentProblem.questionData
 
-	# print len(qd)
+  # newQD = []
 
-	# print currentProblem.questionData[0][0][0]
-	m = mimicry.mimic.Mimic([(0,1) for n in xrange(100)], currentProblem.ScoreQ, samples=1000, percentile=0.9)
-	#Solve problems
-	for i in range(10):
-		submission = m.fit()
-		# submission = []
-		# for i in range(0, currentProblem.numArguments):
-		# 	if i==currentProblem.keyArgument:
-		# 		submission.append(random.choice(currentProblem.knowledgeBase))
-		# 	else:
-		# 		submission.append(random.random())
-		currentProblem.ActivateFunction(submission)
-	scores.append(currentProblem.Score())
-	currentProblem = myInterface.GetNextProblem()
+  # for x in range(len(qd)):
+  #   for y in range(len(qd[x])):
+  #     for z in range(len(qd[x][y])):
+  #       newQD.append( int(100*(qd[x][y][z])) )
+
+  # oldQD = [newQD[x:x+3] for x in range(len(newQD)) if x % 3 == 0]
+  # oldQD = [oldQD[x:x+100] for x in range(len(oldQD)) if x % 100 == 0]
+
+  newQD = [(0, 100) for x in range(30000)]
+
+  print "MIMIC"
+  m = mimicry.mimic.Mimic(newQD, currentProblem.ScoreQ, samples=1000, percentile=0.9)
+  #Solve problems
+  for i in range(10):
+  	print i
+  	submission = m.fit()
+  	currentProblem.ActivateFunction(submission)
+
+  scores.append(currentProblem.Score())
+  currentProblem = myInterface.GetNextProblem()
 
 print (sum(scores))

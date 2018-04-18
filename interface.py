@@ -7,7 +7,7 @@ from desserts import problem_interface as dessert_interface
 
 class Problem:
 	def __init__(self, _problemType, _questionData, _initialKnowledgeBase, _function, _numArguments, _keyArgument, _scoreFunction, _target, _clearFunction):
-		self.problemtype =_problemType
+		self.problemType =_problemType
 		self.questionData = _questionData
 		self.knowledgeBase = _initialKnowledgeBase
 		self.function = _function
@@ -25,7 +25,13 @@ class Problem:
 	def Score(self):
 		return self.scoreFunction(self.questionData, self.target)
 
-	def ScoreQ(self,q):
+	def ScoreQ(self,newQD):
+		newQD = [float(x)/100 for x in newQD]
+		oldQD = [newQD[x:x+3] for x in range(len(newQD)) if x % 3 == 0]
+		oldQD = [oldQD[x:x+100] for x in range(len(oldQD)) if x % 100 == 0]
+
+		self.target = oldQD
+
 		return self.scoreFunction(self.questionData, self.target)
 
 	#Clears current questionData
@@ -57,6 +63,3 @@ class TestInterface:
 				return self.GetNextProblem()
 			else:
 				return None
-
-
-
