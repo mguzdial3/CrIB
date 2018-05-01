@@ -25,6 +25,15 @@ class Problem:
 	def Score(self):
 		return self.scoreFunction(self.questionData, self.target)
 
+	def ScoreQ(self,newQD):
+		newQD = [float(x)/100 for x in newQD]
+		oldQD = [newQD[x:x+3] for x in range(len(newQD)) if x % 3 == 0]
+		oldQD = [oldQD[x:x+100] for x in range(len(oldQD)) if x % 100 == 0]
+
+		self.target = oldQD
+
+		return self.scoreFunction(self.questionData, self.target)
+
 	#Clears current questionData
 	def Clear(self):
 		self.questionData = self.clearFunction(self.questionData)
