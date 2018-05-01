@@ -2,22 +2,6 @@ import numpy as np
 import random
 import copy
 
-#TODO: change representation to a set of actions.
-#       currently taking advantage of known "hidden representaiton" of each problem type
-#TODO: can bring pixel level to components at rgb
-#TODO: Lang at char level, No credit for partial words
-#TODO: narrative, swap out contents of the nodes
-
-#actionspace of painting and photobash are very large.
-#num generations needs to be very large to even have enough actions
-#story's intermediate state can not be graded in the same manner as the rest of the classes.
-#In other words, can't really get intermediate without applying a function onto the state
-'''
-Typo in interface.problem. self.problemtype
-In the paper, limitations and future work, "desert"
-In narrative, "this was down to"
-'''
-
 #parent class for category specific work. doesn't do anything, just nice to know
 class Environment:
 
@@ -105,7 +89,9 @@ class PhotoBash(Environment):
         problem.Clear()
         for i in range(len(candidate)):
             problem.ActivateFunction(candidate[i])
-        return problem.Score()
+        score = problem.Score()
+        problem.Clear()
+        return score
 
 class Story(Environment):
     def initialize(self, problem, population_size):
@@ -119,8 +105,8 @@ class Story(Environment):
         new = entity.Clone()
         kb_story = random.choice(problem.knowledgeBase)
         newevent = random.choice(kb_story.nodes).eventName
-        print(random.choice(new.nodes))
-        # (random.choice(new.nodes)).eventName = newevent
+        # print(random.choice(new.nodes))
+        (random.choice(new.nodes)).eventName = newevent
         return new
         # return entity
 
@@ -129,7 +115,11 @@ class Story(Environment):
         return None
 
     def score(self, problem, candidate):
-        return problem.scoreFunction(problem.function([x], ["", problem.target]), problem.target)
+        problem.Clear()
+        problem.ActivateFunction([candidate])
+        score = problem.Score()
+        problem.Clear()
+        return score
 
 class Dessert(Environment):
     ingredients = None

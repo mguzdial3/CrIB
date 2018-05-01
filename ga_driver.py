@@ -3,9 +3,9 @@ import random
 import numpy as np
 import ga.initializers as initi
 
-num_iterations = 100
+num_iterations = 5
 prob_mutation = 0.7
-population_size = 100
+population_size = 10
 #choose first x candidates
 num_parent = 20
 num_children = 20
@@ -21,7 +21,7 @@ def evolve(problem, init):
         if co[0] is not None:
             population = population + co
 
-        #do mutation
+        # do mutation
         for j in range(population_size):
             entity = population[j]
             if random.random() <= prob_mutation * 100:
@@ -40,7 +40,11 @@ currentProblem = myInterface.GetNextProblem()
 initializers = [initi.Painter(), initi.Language(), initi.PhotoBash(), initi.Story(), initi.Dessert()]
 
 scores = []
+p = 1
 while not currentProblem is None:
+    print("problem: " + str(p))
+    # raw_input()
+    p += 1
 
     answer = ''
     if currentProblem.problemType is "painting":
@@ -59,9 +63,10 @@ while not currentProblem is None:
             currentProblem.ActivateFunction(candidate[i])
         pass
     elif currentProblem.problemType is "story":
+        #178.578222594
         #Currently stuck on problem 45, infinite recursion error
-        # qd = currentProblem.function([evolve(currentProblem, initializers[3])], [None, currentProblem.target])
-        # currentProblem.questionData = qd
+        qd = currentProblem.function([evolve(currentProblem, initializers[3])], [None, currentProblem.target])
+        currentProblem.questionData = qd
         pass
     elif currentProblem.problemType is "dessert":
         #267.75
