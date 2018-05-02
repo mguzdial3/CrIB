@@ -6,6 +6,7 @@ import random
 
 from mymcts.paintingtest import *
 
+# for painting: 221.324616667/400 = 0.5533115417
 
 myInterface = interface.TestInterface()
 currentProblem = myInterface.GetNextProblem()
