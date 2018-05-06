@@ -5,7 +5,7 @@ import numpy as np
 #painting = 338.795466667 out of 400 or 0.8469886667
 #language = 288.4 out of 400 or 0.721
 #photobashing = 356.533931566 out of 400 or 0.8913348289
-#stories = 29.8659294197 out of 400 or 0.07466482355
+#stories = 179.768121584 out of 400 or 0.449420304
 #dessert = 196.903571429 out of 400 or 0.4922589286
 #Total = 1,210.4988990817 out of 2000 or 0.6052494495
 
@@ -18,7 +18,7 @@ while not currentProblem is None:
 	#Special Case for each problem
 	attempts+=1
 	print (attempts)
-	if currentProblem.problemtype=="painting":
+	if currentProblem.problemType=="painting":
 		#Cheat: grab target and find closest thing in input set
 		target = currentProblem.target
 		colorOptions = list(currentProblem.knowledgeBase)
@@ -37,7 +37,7 @@ while not currentProblem is None:
 		score = currentProblem.Score()
 		scores.append(score)
 		currentProblem = myInterface.GetNextProblem()
-	elif currentProblem.problemtype=="alien_language":
+	elif currentProblem.problemType=="alien_language":
 		#Cheat: grab target and find closest thing in input set
 		target = currentProblem.target
 		wordOptions = currentProblem.knowledgeBase
@@ -48,7 +48,7 @@ while not currentProblem is None:
 				currentProblem.ActivateFunction([random.choice(wordOptions)])
 		scores.append(currentProblem.Score())
 		currentProblem = myInterface.GetNextProblem()
-	elif currentProblem.problemtype=="photobashing":
+	elif currentProblem.problemType=="photobashing":
 		#Cheat: grab target and find closest thing in input set
 		target = currentProblem.target
 		imageOptions = currentProblem.knowledgeBase
@@ -63,7 +63,7 @@ while not currentProblem is None:
 				bestScore = score
 		scores.append(bestScore)
 		currentProblem = myInterface.GetNextProblem()
-	elif currentProblem.problemtype=="story":
+	elif currentProblem.problemType=="story":
 		#Cheat: grab target and find closest thing in input set
 		plotGraphs = currentProblem.knowledgeBase
 		bestScore = 0.0
@@ -74,7 +74,7 @@ while not currentProblem is None:
 				bestScore = score
 		scores.append(bestScore)
 		currentProblem = myInterface.GetNextProblem()
-	elif currentProblem.problemtype=="dessert":
+	elif currentProblem.problemType=="dessert":
 		#Cheat: grab target and find closest thing in input set
 		recipes = currentProblem.knowledgeBase
 		bestScore = 0.0
