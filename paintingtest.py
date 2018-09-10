@@ -7,6 +7,7 @@ import argparse
 import numpy as np
 
 from mcts.mcts import *
+# import mymcts.painting_world_state as state
 from mcts.graph import StateNode
 from mcts.tree_policies import *
 from mcts.default_policies import *
@@ -41,10 +42,11 @@ def run_experiment(intrinsic_motivation, gamma, c, mc_n, runs, steps, problem):
     rewards = []
     for r in range(runs):
         sta = time.time()
-        print ("RUN number", r + 1)
+        print ("RUN number", r)
         goal = draw_goal(start, 6)
         # manual = draw_goal(start, 3)
         # print("Goal: {}".format(goal))
+        # # print("Manual: {}".format(manual))
 
         world = PaintingWorld((100, 100), False, (100, 100), problem)
         belief = None
@@ -59,15 +61,20 @@ def run_experiment(intrinsic_motivation, gamma, c, mc_n, runs, steps, problem):
         # trajectory =[]
         rew = 0
         for step in range(steps):
+            # try:
+            # if step % 3 == 0:
+            #     print("step", step)
             st = time.time()
             ba = mcts_search(next_state, n=mc_n)
-            # print("=" * 80)
-            # print("State: {}".format(next_state.state))
-            # # print("Belief: {}".format(next_state.state.belief))
-            # print("Reward: {}".format(next_state.reward))
-            # print("N: {}".format(next_state.n))
-            # print("Q: {}".format(next_state.q))
-            # print("Action: {}".format(ba.action))
+            # if step % 3 == 0:
+            #     print("step", step)
+                # print("=" * 80)
+                # print("State: {}".format(next_state.state))
+                # # print("Belief: {}".format(next_state.state.belief))
+                # print("Reward: {}".format(next_state.reward))
+                # print("N: {}".format(next_state.n))
+                # print("Q: {}".format(next_state.q))
+                # print("Action: {}".format(ba.action))
             # trajectory.append(next_state.state.pos)
             rew = next_state.reward
             if (next_state.state.pos == np.array(goal)).all():
@@ -77,7 +84,7 @@ def run_experiment(intrinsic_motivation, gamma, c, mc_n, runs, steps, problem):
             next_state.parent = None
 
             en = time.time()
-            print ("step", step + 1, "time elapsed", en - st) if step % 5 == 0 else None
+            print ("step", step, "time elapsed", en - st)
 
             if step >= 5 and rew > 0.5:
                 break
@@ -92,8 +99,8 @@ def run_experiment(intrinsic_motivation, gamma, c, mc_n, runs, steps, problem):
         #     pickle.dump(trajectories, f)
         # print("=" * 80)
         end = time.time()
-        print ("run", r + 1, "time elapsed", end-sta, "rew", rew)
-        if rewards[-1] > 0.65:
+        print ("run", r, "time elapsed", end-sta)
+        if rewards[-1] > 0:
             break
     w = max(rewards)
     print ("REWARD", w)
@@ -118,11 +125,11 @@ if __name__ == '__main__':
                                                  'intrinsic motivation.')
     parser.add_argument('--intrinsic', '-i', action='store_true',
                         help='Should intrinsic motivation be used?')
-    parser.add_argument('--mcsamples', '-m', type=int, default=5, # 500
+    parser.add_argument('--mcsamples', '-m', type=int, default=5,
                         help='How many monte carlo runs should be made.')
-    parser.add_argument('--runs', '-r', type=int, default=2, # 10
+    parser.add_argument('--runs', '-r', type=int, default=2,
                         help='How many runs should be made.')
-    parser.add_argument('--steps', '-s', type=int, default=10, # 100
+    parser.add_argument('--steps', '-s', type=int, default=10,
                         help="Maximum number of steps performed.")
     parser.add_argument('--gamma', '-g', type=float, default=0.6,
                         help='The learning rate.')
@@ -149,3 +156,4 @@ if __name__ == '__main__':
 
     print (sum(scores))
     print ("1 to 400")
+    print (counter)

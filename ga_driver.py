@@ -70,9 +70,15 @@ while not currentProblem is None:
         pass
     elif currentProblem.problemType is "dessert":
         #267.75
+        print currentProblem.knowledgeBase
+        print 
         currentProblem.questionData = evolve(currentProblem, initializers[4])
+        print currentProblem.questionData
+        print
+        print
+        print
         pass
     scores.append(currentProblem.Score())
-    currentProblem = myInterface.GetNextProblem()
+    currentProblem = myInterface.GetNextProblem() if p < 4 else None
 
 print (sum(scores))

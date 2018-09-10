@@ -18,6 +18,25 @@ def Score(questionData,target):
 	ingredientsScore = 0.5*(float(ingredientDifferences)/float(len(targetIngredients)))
 	return (titleScore+ingredientsScore)
 
+def allScore(y_true,y_pred):
+	#titleScore
+	total = 0
+	for y in range(len(y_pred)):
+		questionData = y_pred[y]
+		target = y_true[y]
+
+		inputTitle = questionData[0].split(' ')
+		targetTitle = target[0].split(' ')
+		titleDifferences = len(set(inputTitle).intersection(set(targetTitle)))
+		titleScore = 0.5*(float(titleDifferences)/float(len(targetTitle)))
+		#ingredientsScore
+		inputIngredients = set(questionData[1])
+		targetIngredients = set(target[1])
+		ingredientDifferences = len(inputIngredients.intersection(targetIngredients))
+		ingredientsScore = 0.5*(float(ingredientDifferences)/float(len(targetIngredients)))
+		total += titleScore+ingredientsScore
+	return float(total)/len(y_pred)
+
 def Clear(questionData):
 	return ['', []]
 

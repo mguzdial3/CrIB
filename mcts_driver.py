@@ -26,12 +26,15 @@ parser.add_argument('--gamma', '-g', type=float, default=0.6,
                     help='The learning rate.')
 parser.add_argument('--uct_c', '-c', type=float, default=10,
                     help='The UCT parameter Cp.')
+parser.add_argument('--problems', '-p', type=float, default=100,
+                    help='Number of problems to go through')
 
 args = parser.parse_args()
 
 scores = []
-counter = 1
+counter = 0
 while not currentProblem is None:
+  counter += 1
   # ptest_perform(currentProblem)
 
   #Solve problems
@@ -41,7 +44,8 @@ while not currentProblem is None:
                                mc_n=args.mcsamples, runs=args.runs, steps=args.steps,
                                c=args.uct_c, problem=currentProblem))
   currentProblem = myInterface.GetNextProblem()
-  counter += 1
+  if counter == args.problems:
+    break
 
-print (sum(scores))
-print (sum(scores)/float(counter))
+print ("Sum of Scores: ", sum(scores))
+print ("AVG: ", sum(scores)/float(counter))

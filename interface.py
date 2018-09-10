@@ -41,7 +41,8 @@ class Problem:
 class TestInterface:
 	def __init__(self):
 		#ALTER THIS LINE TO TEST ON A SUBSET OF DOMAINS
-		self.interfaces = [painting_interface, language_interface, photobashing_interface, story_interface, dessert_interface]
+		self.interfaces = [dessert_interface]
+		# self.interfaces = [painting_interface, language_interface, photobashing_interface, story_interface, dessert_interface]
 		self.GetProblems()
 
 	def GetProblems(self):
