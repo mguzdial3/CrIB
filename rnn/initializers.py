@@ -15,37 +15,51 @@ class Dessert(Environment):
     ingredients = None
     names = None
     allIngredients = None
+    bigList = []
+    d = {}
 
     def initialize(self, interface):
         myInterface = interface.TestInterface()
         currentProblem = myInterface.GetNextProblem()
         p = 1
         allIngredients = []
+        maxLen = 0
+        testSet = []
+        targetSet = []
         while not currentProblem is None:
             # print("problem: " + str(p))
             p += 1
             if currentProblem.problemType is "dessert":
                 allIngredients += [y for x in currentProblem.knowledgeBase for y in x[1]]
+                testSet.append([y for x in currentProblem.knowledgeBase for y in x[1]])
+                targetSet.append([y for y in currentProblem.target[1]])
+                maxLen = max(maxLen, len(currentProblem.target[1]))
             currentProblem = myInterface.GetNextProblem()
+        self.bigList = allIngredients[:]
         allIngredients = list(set(allIngredients))
+        for i, ing in enumerate(allIngredients):
+            self.d[ing] = i
+
         # print len(allIngredients) # 128 ingredients
         self.allIngredients = allIngredients
+        return self.bigList, self.d, maxLen, testSet, targetSet
+
 
     def initXY(self, problem):
-        ingredients = [y for x in problem.knowledgeBase for y in x[1]]
+        ingredients = [x[1] for x in problem.knowledgeBase]
         # print ingredients
         target = problem.target[1]
         # print target
         
-        matrixIng = np.zeros((len(self.allIngredients)))
-        matrixTarget = np.zeros((len(self.allIngredients)))
+        matrixIng = np.zeros( (len(self.allIngredients)) )
+        matrixTarget = np.zeros( (len(self.allIngredients)) )
         for i, x in enumerate(self.allIngredients):
             if x in ingredients:
-                matrixIng[i] = 1
+                    matrixIng[i] = 1
             if x in target:
                 matrixTarget[i] = 1
 
-        # print matrixIng
+        # print matrixIng.shape
         # print
         # print matrixTarget
         return matrixIng, matrixTarget
